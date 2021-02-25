@@ -1,0 +1,25 @@
+apiVersion:                           apps/v1
+kind:                                 Deployment
+metadata:
+  name: robot-task-webservice
+  labels:
+    app: robot-task-webservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: robot-task-webservice
+  template:
+    metadata:
+      labels:
+        app: robot-task-webservice
+    spec:
+      containers:
+        - name: robot-task-webservice
+          image: robot-task-webservice
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 9090
+              name: management

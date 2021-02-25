@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: robot-task-webservice
+  labels:
+    app: robot-task-webservice
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: http
+      name: svc-http
+    - port: 9090
+      protocol: TCP
+      targetPort: management
+      name: svc-management
+  selector:
+    app: robot-task-webservice
