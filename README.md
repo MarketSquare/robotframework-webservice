@@ -17,20 +17,20 @@ Beispiel mit Variablen:
 
     http://localhost:5003/run/MeinNuetzlicherTask?MeineVariable=42&NochEineVariable=Mustermann
 
-Als Antwort bekommt man den Status angezeigt und einen Link zum Log.
+Als Antwort bekommt man den Status angezeigt und die Log-Datei.
 
 
 ## Entwicklungsstatus
 
-Status: Noch in der Experimentierphase
+Status: Noch in der Prototypphase
 
 
 ### Webservice starten
 
 Beispiel, um den Service auf Port 5003 zu starten:
 
-    set FLASK_APP=app.py
-    flask run --port 5003
+    
+    uvicorn app:app --port 5003
 
 Geht auch mit anderen WSGI-Webservern, z.B. Waitress:
 
@@ -64,7 +64,9 @@ Beispiel:
 
 ### Robot Log.html, output.xml und report.hmtl
 
-Im Moment werden diese drei Dateien immer vom letzten Task überschrieben.
+Im Moment werden diese drei Dateien von jedem Robot-Task im Verzeichnis /robotlog angelegt.
+Jeder Task legt im /robotlog sein eigenes Verzeichniss mit den drei Datein an. Diese werden 
+bei jedem neuen lauf des Task überschrieben.
 Sie können per Browser abgerufen werden über die Route ``\robotlog\``.
 
 Beispiele:
