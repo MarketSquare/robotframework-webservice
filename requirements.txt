@@ -2,3 +2,4 @@ robotframework
 fastapi
 aiofiles
 uvicorn
+requests

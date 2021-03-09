@@ -2,6 +2,8 @@ import threading
 import fastapi
 import robot
 import sys
+import requests
+import json
 from fastapi import FastAPI, Request
 from fastapi.responses import *
 from fastapi.staticfiles import StaticFiles
@@ -28,7 +30,7 @@ def server_status():
 
 @app.get('/run/{task}')
 def do_some_work(task):
-    result: int = here_comes_work(task)
+    result: int = start_robot_task(task)
     if result == 0:
         result_page = 'PASS'
     elif 250 >= result >= 1:
@@ -40,16 +42,16 @@ def do_some_work(task):
 
 
 @app.get('/run_and_show/{task}', response_class=HTMLResponse)
-def do_some_work_and_show_log(task: str, arguments: Request):
+def start_robot_task_and_show_log(task: str, arguments: Request):
     variables = [f'{k}:{v}' for k, v in arguments.query_params.items()]
-    here_comes_work(task, variables)
+    start_robot_task(task, variables)
     return RedirectResponse(f"/robotlog/{task}/log.html")
 
 
 @app.get('/run_and_show_report/{task}', response_class=HTMLResponse)
-def do_some_work_and_show_report(task: str, arguments: Request):
+def start_robot_task_and_show_report(task: str, arguments: Request):
     variables = [f'{k}:{v}' for k, v in arguments.query_params.items()]
-    here_comes_work(task, variables)
+    start_robot_task(task, variables)
     return RedirectResponse(f"/robotlog/{task}/report.html")
 
 
@@ -89,12 +91,30 @@ def set_poll_task(task: str):
     return POLLING_THREAD.set_robot_task(task)
 
 
+@app.get('/set_topic/{topic}')
+def set_topic(topic: str):
+    POLLING_THREAD.set_topic(topic)
+    return topic
+
+
+@app.get('/get_topic/')
+def get_topic():
+    return POLLING_THREAD.get_topic()
+
+
 @app.get('/start_camunda_polling/')
 def start_polling():
     return POLLING_THREAD.run()
 
 
-def here_comes_work(task: str, variables: list = None) -> int:
+def ask_for_work(topic: str):
+    response = requests.get(f"https://camunda-dpa-prod.dpag.io/engine-rest/externalTask/count?topicName={topic}")
+    response.raise_for_status()
+    content = json.loads(response.content.decode())
+    return content
+
+
+def start_robot_task(task: str, variables: list = None) -> int:
     result: int = robot.run(
         'tasks',
         task=task,
@@ -107,20 +127,21 @@ def here_comes_work(task: str, variables: list = None) -> int:
 
 class CamundaPollThread(threading.Thread):
 
-    def __init__(self, seconds: int = 1800, robot_task: str = "default_task") -> None:
+    def __init__(self, seconds: int = 1800, robot_task: str = "default_task", topic: str ="default_topic") -> None:
         threading.Thread.__init__(self)
         self.polling = True
         self.robot_task = robot_task
-        #self.work_present
+        self.work_present = ask_for_work(self.topic)
+        self.topic = topic
         self.polling_intervall_seconds = seconds
         self.stopping_event = threading.Event()
 
     def run(self) -> None:
-        #if self.workpresent:
-        while self.polling:
-            self.work()
-            self.stopping_event.wait(self.polling_intervall_seconds)
-            self.stopping_event.clear()
+        if self.work_present > 0:
+            while self.polling:
+                self.work()
+                self.stopping_event.wait(self.polling_intervall_seconds)
+                self.stopping_event.clear()
 
     def set_robot_task(self, var_robot_task: str) -> None:
         self.robot_task = var_robot_task
@@ -132,13 +153,18 @@ class CamundaPollThread(threading.Thread):
     def get_polling_intervall_seconds(self) -> int:
         return self.polling_intervall_seconds
 
+    def set_topic(self, topic: str) -> None:
+        self.topic = topic
+
+    def get_topic(self) -> str:
+        return self.topic
+
     def work(self) -> None:
         robot.run(
             self.robot_task,
             outputdir=f'robotlog/{self.robot_task}',
             variables='variables.yaml'
             )
-        #self.work_present = True
 
     def stop(self) -> None:
         self.polling = False
