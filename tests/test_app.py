@@ -35,3 +35,29 @@ class EndpointTesttest_s(unittest.TestCase):
             response = client.get("/run_and_show_report/nochEinTask?art=tests&description=FunktionsTestMitReports")
         self.assertEqual(200, response.status_code)
 
+    def test_is_robotlog_available(self):
+        with TestClient(app) as client:
+            response = client.get("/show_logs/nochEinTask")
+        self.assertEqual(200, response.status_code)
+
+    def test_is_robotreport_available(self):
+        with TestClient(app) as client:
+            response = client.get("/show_report/nochEinTask")
+        self.assertEqual(200, response.status_code)
+
+    def test_get_topic(self):
+        with TestClient(app) as client:
+            response = client.get("/get_topic/")
+        self.assertEqual(200, response.status_code)
+
+    def test_set_topic(self):
+        with TestClient(app) as client:
+            response = client.get("/set_topic/default_topic")
+        self.assertEqual(200, response.status_code)
+
+    def test_get_polling_intervall(self):
+        with TestClient(app) as client:
+            response = client.get("/get_polling_intervall/")
+        self.assertEqual(200, response.status_code)
+
+

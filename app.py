@@ -137,7 +137,7 @@ class CamundaPollThread(threading.Thread):
         self.stopping_event = threading.Event()
 
     def run(self) -> None:
-        if self.work_present > 0:
+        if self.work_present:
             while self.polling:
                 self.work()
                 self.stopping_event.wait(self.polling_intervall_seconds)
