@@ -106,9 +106,18 @@ def get_topic():
 def start_polling():
     return POLLING_THREAD.run()
 
+@app.get('/set_camunda_poll_url/')
+def set_poll_url_for_camunda(poll_url: str):
+    POLLING_THREAD.set_poll_url(poll_url)
+    return poll_url
 
-def ask_for_work(topic: str):
-    response = requests.get(f"https://camunda-dpa-prod.dpag.io/engine-rest/externalTask/count?topicName={topic}")
+@app.get('/get_camunda_poll_url/')
+def get_poll_url_for_camunda():
+    return POLLING_THREAD.get_poll_url()
+
+
+def ask_for_work(topic: str, poll_url: str):
+    response = requests.get(f"{poll_url}/engine-rest/external-task/count?topicName={topic}")
     response.raise_for_status()
     content = json.loads(response.content.decode())
     return content
@@ -127,12 +136,13 @@ def start_robot_task(task: str, variables: list = None) -> int:
 
 class CamundaPollThread(threading.Thread):
 
-    def __init__(self, seconds: int = 1800, robot_task: str = "default_task", topic: str ="default_topic") -> None:
+    def __init__(self, seconds: int = 1800, robot_task: str = "default_task", topic: str ="default_topic", poll_url: str = "default_url") -> None:
         threading.Thread.__init__(self)
         self.polling = True
         self.robot_task = robot_task
-        self.work_present = ask_for_work(self.topic)
         self.topic = topic
+        self.poll_url = poll_url
+        self.work_present = ask_for_work(self.topic, self.poll_url)
         self.polling_intervall_seconds = seconds
         self.stopping_event = threading.Event()
 
@@ -158,6 +168,12 @@ class CamundaPollThread(threading.Thread):
 
     def get_topic(self) -> str:
         return self.topic
+
+    def set_poll_url(self, poll_url: str) -> None:
+        self.poll_url = poll_url
+
+    def get_poll_url(self) -> str:
+        return self.poll_url
 
     def work(self) -> None:
         robot.run(
