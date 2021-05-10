@@ -9,22 +9,22 @@ from fastapi.responses import *
 from fastapi.staticfiles import StaticFiles
 
 
-APP_NAME = 'Robot-Webserver zum Starten von RobotTasks'
+APP_NAME = 'Robot Task Server'
 app = FastAPI(title=APP_NAME)
 app.mount("/robotlog", StaticFiles(directory="robotlog"), name="robotlog")
 
 
 @app.get('/')
 def greetings():
-    return 'Webserver zum Starten von RobotTasks'
+    return 'web service for starting robot tasks'
 
 
 @app.get('/status/')
 def server_status():
-    status = {'Python Version': sys.version,
-              'Platform': sys.platform,
-              'Arguments': sys.argv,
-              'Application': APP_NAME}
+    status = {'python version': sys.version,
+              'platform': sys.platform,
+              'arguments': sys.argv,
+              'application': APP_NAME}
     return status
 
 
@@ -106,10 +106,12 @@ def get_topic():
 def start_polling():
     return POLLING_THREAD.run()
 
+
 @app.get('/set_camunda_poll_url/')
 def set_poll_url_for_camunda(poll_url: str):
     POLLING_THREAD.set_poll_url(poll_url)
     return poll_url
+
 
 @app.get('/get_camunda_poll_url/')
 def get_poll_url_for_camunda():
