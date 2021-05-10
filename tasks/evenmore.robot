@@ -1,12 +1,12 @@
 *** Tasks ***
-Das wird nichts
-    Fail    Schrott!
+This won't work
+    Fail    Doh!
 
-Task mit Variable
-    ${puffer}    Set Variable    ${eingabe}
-    Log    ${eingabe}
-    Should Be Equal    ${eingabe}    qwerty
+Task with variable
+    ${puffer}    Set Variable    ${input}
+    Log    ${input}
+    Should Be Equal    ${input}    qwerty
 
-Task mit mehreren Variablen
-    Should Be Equal    ${vorname}    Max
-    Should Be Equal    ${nachname}    Mustermann
+Task with more variables
+    Should Be Equal    ${firstname}    Max
+    Should Be Equal    ${lastname}    Mustermann
