@@ -1,0 +1,6 @@
+.idea/
+venv/
+output/
+log/
+logs/
+robotlog/
