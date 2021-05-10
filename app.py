@@ -1,9 +1,5 @@
-import threading
-import fastapi
 import robot
 import sys
-import requests
-import json
 from fastapi import FastAPI, Request
 from fastapi.responses import *
 from fastapi.staticfiles import StaticFiles
@@ -37,8 +33,8 @@ def do_some_work(task):
         result_page = f'FAIL: {result} tasks failed'
     else:
         result_page = f'FAIL: Errorcode {result}'
-    result_page += '<p><a href="../robotlog/log.html">Go to log</a></p>'
-    return Response(content=result_page, media_type="application/xml")
+    result_page += f'<p><a href="../robotlog/{task}/log.html">Go to log</a></p>'
+    return Response(content=result_page, media_type="text/html")
 
 
 @app.get('/run_and_show/{task}', response_class=HTMLResponse)
