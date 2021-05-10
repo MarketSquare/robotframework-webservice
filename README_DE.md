@@ -30,11 +30,11 @@ Status: Noch in der Prototypphase
 Beispiel, um den Service auf Port 5003 zu starten:
 
     
-    uvicorn app:app --port 5003
+    uvicorn app.main:app --port 5003
 
 Geht auch mit anderen WSGI-Webservern, z.B. Waitress:
 
-    waitress-serve --port 5003 app:app
+    waitress-serve --port 5003 app.main:app
 
 
 ### Demo-Tasks

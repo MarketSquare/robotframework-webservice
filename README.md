@@ -24,11 +24,11 @@ Response contains status and log report.
 
 Start web service on port 5003:
     
-    uvicorn app:app --port 5003
+    uvicorn app.main:app --port 5003
 
 Start web service with other WSGI server, i.e waitress:
 
-    waitress-serve --port 5003 app:app
+    waitress-serve --port 5003 app.main:app
 
 
 ## Demo-Tasks
