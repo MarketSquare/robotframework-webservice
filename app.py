@@ -65,13 +65,6 @@ def show_report(task: str):
     return RedirectResponse(f'/robotlog/{task}/report.html')
 
 
-def ask_for_work(topic: str, poll_url: str):
-    response = requests.get(f"{poll_url}/engine-rest/external-task/count?topicName={topic}")
-    response.raise_for_status()
-    content = json.loads(response.content.decode())
-    return content
-
-
 def start_robot_task(task: str, variables: list = None) -> int:
     result: int = robot.run(
         'tasks',
