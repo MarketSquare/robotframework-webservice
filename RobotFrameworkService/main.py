@@ -2,10 +2,11 @@ import sys
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from .routers import robotframework
+from .version import get_version
 
 
 APP_NAME = 'Robot Task Server'
-app = FastAPI(title=APP_NAME)
+app = FastAPI(title=APP_NAME, version=get_version())
 app.include_router(robotframework.router)
 robotlog = StaticFiles(directory="robotlog")
 app.mount("/robotlog", robotlog, name="robotlog")
