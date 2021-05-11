@@ -11,11 +11,11 @@ This web service shall start Robot Framework tasks and return and cache the acco
 # Usage
 Call robot task:
 
-    http://localhost:5003/run/mytask
+    http://localhost:5003/robotframework/run/mytask
 
 Call robot task with variables:
 
-    http://localhost:5003/run/mytask?myVariable1=42&anotherVariable=Mustermann
+    http://localhost:5003/robotframework/run/mytask?myVariable1=42&anotherVariable=Mustermann
 
 Response contains status and log report.
 
@@ -24,11 +24,14 @@ Response contains status and log report.
 
 Start web service on port 5003:
     
-    uvicorn app.main:app --port 5003
+    uvicorn RotbotFrameworkService.main:app --port 5003
 
 Start web service with other WSGI server, i.e waitress:
 
-    waitress-serve --port 5003 app.main:app
+    waitress-serve --port 5003 RotbotFrameworkService.main:app
+
+## SwaggerUi
+Swagger-UI is available under `http://localhost:5003/docs`
 
 
 ## Demo-Tasks
@@ -41,19 +44,3 @@ your own task suites in that directory, if you like.
 
 Tasks may contain spaces, URL must not. Luckily, Robot Framework supports CamelCase as well as snake_case syntax.
 Meaning: "Another Task" can be trigger in url with parameter `AnotherTask` or ``another_task``
-
-
-## Variablen
-
-Variables can be passed as url parameters:
-
-    http://localhost:5003/taskWithMoreVariables?firstname=Max&lastname=Mustermann
-
-
-## Robot Log.html, output.xml und report.hmtl
-
-Latest task reports can be accessed at endpoint ``\robotlog\``.
-
-    http://localhost:5003/robotlog/log.html
-    http://localhost:5003/robotlog/output.xml
-    http://localhost:5003/robotlog/report.html
