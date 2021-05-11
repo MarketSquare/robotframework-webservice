@@ -11,6 +11,10 @@ Programming Language :: Python :: 3.9
 Programming Language :: Python :: Implementation :: PyPy
 """.strip().splitlines()
 
+def get_long_description():
+      with open('README.md','r') as file:
+            return file.read()
+
 
 def get_requirements():
       with open('requirements.txt','r') as file:
@@ -26,4 +30,6 @@ setup(name='robotframework-webservice',
       install_requires=[
             get_requirements()
       ],
+      long_description=get_long_description(),
+      url='https://github.com/postadress/robotframework-webservice',
       zip_safe=False)
