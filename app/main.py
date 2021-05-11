@@ -10,6 +10,7 @@ app.include_router(robotframework.router)
 robotlog = StaticFiles(directory="robotlog")
 app.mount("/robotlog", robotlog, name="robotlog")
 
+
 @app.get('/')
 def greetings():
     return 'web service for starting robot tasks'
