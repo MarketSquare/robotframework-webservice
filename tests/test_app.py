@@ -38,7 +38,7 @@ class EndpointTesttest_s(unittest.TestCase):
     def test_is_robotlog_available(self):
         with TestClient(app) as client:
             client.get("/robotframework/run/anotherTask")
-            response = client.get("/robotframework/show_logs/anotherTask")
+            response = client.get("/robotframework/show_log/anotherTask")
         self.assertEqual(200, response.status_code)
 
     def test_is_robotreport_available(self):
