@@ -5,7 +5,7 @@ from .routers import robotframework
 from .version import get_version
 
 
-APP_NAME = 'Robot Task Server'
+APP_NAME = 'Robot Framework Server'
 app = FastAPI(title=APP_NAME, version=get_version())
 app.include_router(robotframework.router)
 robotlog = StaticFiles(directory="robotlog")
