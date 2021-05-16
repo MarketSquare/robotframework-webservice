@@ -1,8 +1,8 @@
 import sys
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
-from .routers import robotframework
-from .version import get_version
+from RobotFrameworkService.routers import robotframework
+from RobotFrameworkService.version import get_version
 
 
 APP_NAME = 'Robot Framework Server'
@@ -25,5 +25,12 @@ def server_status():
               'application': APP_NAME}
     return status
 
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-t", "--taskfolder", help="Folder with tasks service will executed")
+    args = parser.parse_args()
 
 
