@@ -4,3 +4,5 @@ output/
 log/
 logs/
 robotlog/
+
+*.egg-info
