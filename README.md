@@ -22,11 +22,25 @@ Response contains status and log report.
 
 ## Start web service
 
-Start web service on port 5003:
-    
-    uvicorn RotbotFrameworkService.main:app --port 5003
+The web service starts automatically with uvicorn inside. Simply call:
 
-Start web service with other WSGI server, i.e waitress:
+    python -m RobotFrameworkService.main
+
+You can check available options with
+
+    python -m RobotFrameworkService.main --help
+
+### Example:
+
+    python -m RobotFrameworkService.main -p 5003 -t path_to_my_taskfolder
+
+## Custom WSGI server
+
+You can start RobotFrameworkService with bare WSGI servers:
+    
+    uvicorn RobotFrameworkService.main:app --port 5003
+
+Or start web service with other WSGI server, i.e waitress:
 
     waitress-serve --port 5003 RotbotFrameworkService.main:app
 
@@ -38,7 +52,6 @@ Swagger-UI is available under `http://localhost:5003/docs`
 
 This project contains some tasks for demonstration. They are located in ``tasks`` folder. You may add
 your own task suites in that directory, if you like.
-
 
 ## Task name with spaces in URL
 
