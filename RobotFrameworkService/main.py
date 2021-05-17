@@ -41,7 +41,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--taskfolder", default='tasks', help="Folder with tasks service will executed")
     parser.add_argument('--version', action='version', version=f'Robot Framework Webservice {get_version()}')
-    parser.add_argument("-p", "--port", default=os.environ.get('RFS_PORT', default=5001), type=int, help="Port of Robot Framework Webservice")
+    parser.add_argument("-p", "--port", default=os.environ.get('RFS_PORT', default=5003), type=int, help="Port of Robot Framework Webservice")
     args = parser.parse_args()
 
     RFS_Config().cmd_args=args
