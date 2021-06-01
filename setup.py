@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 from RobotFrameworkService.version import get_version
 
 CLASSIFIERS = """
-Development Status :: 3 - Alpha
+Development Status :: 4 - Beta
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Framework :: Robot Framework
