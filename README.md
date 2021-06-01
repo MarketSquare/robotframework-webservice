@@ -8,6 +8,11 @@ A web service managing Robot Framework tasks.
 
 This web service shall start Robot Framework tasks and return and cache the according reports.
 
+# Install
+```
+pip install robotframework-webservice
+```
+
 # Usage
 Call robot task:
 
