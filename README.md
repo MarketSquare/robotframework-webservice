@@ -39,6 +39,12 @@ You can check available options with
 
     python -m RobotFrameworkService.main -p 5003 -t path_to_my_taskfolder
 
+### Example - Variablefiles:
+
+You can provide variable files that are passed to all robot suites on execution:
+
+    python -m RobotFrameworkService.main -p 5003 -t path_to_my_taskfolder --variablefiles config/env/test.py
+
 ## Custom WSGI server
 
 You can start RobotFrameworkService with bare WSGI servers:

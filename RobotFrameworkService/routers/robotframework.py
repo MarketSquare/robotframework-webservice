@@ -66,11 +66,18 @@ async def show_report(task: str):
 
 def start_robot_task(task: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
+    if variables is None:
+        variables = []
+    if config.variablefiles is None:
+        variablefiles=[]
+    else:
+        variablefiles=config.variablefiles
     result: int = robot.run(
         config.taskfolder,
         task=task,
         outputdir=f'logs/{task}',
-        variables=variables,
+        variable=variables,
+        variablefile=variablefiles,
         consolewidth=120
     )
     return result
