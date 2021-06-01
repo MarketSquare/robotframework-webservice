@@ -109,7 +109,7 @@ def _start_specific_robot_task(task: str, variables: list = None) -> int:
     if variables is None:
         variables = []
     if config.variablefiles is None:
-        config.variablefiles=[]
+        variablefiles=[]
     else:
         variablefiles=config.variablefiles
 
