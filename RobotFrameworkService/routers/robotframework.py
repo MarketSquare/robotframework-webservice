@@ -15,11 +15,11 @@ router = APIRouter(
 
 
 @router.get('/run/all')
-async def run():
+async def run(request: Request):
     """
     Run all task available.
     """
-    id = time.time_ns()
+    id = request.headers["request-id"]
     result: int = _start_all_robot_tasks(id)
     if result == 0:
         result_page = 'PASS'
@@ -35,7 +35,7 @@ async def run():
 
 
 @router.get('/run/{task}')
-async def run_task(task):
+async def run_task(task, request: Request):
     """
     Run a given task.
     """
@@ -104,7 +104,7 @@ def _start_all_robot_tasks(id: int, variables: list = None) -> int:
     )
 
 
-def _start_specific_robot_task(task: str, variables: list = None) -> int:
+def _start_specific_robot_task(id: str, task: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
     if variables is None:
         variables = []
@@ -116,7 +116,7 @@ def _start_specific_robot_task(task: str, variables: list = None) -> int:
     return robot.run(
             config.taskfolder,
             task=task,
-            outputdir=f'logs/{task}',
+            outputdir=f'logs/{id}',
             variable=variables,
             variablefile=variablefiles,
             consolewidth=120

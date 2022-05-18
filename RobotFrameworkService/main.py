@@ -1,6 +1,8 @@
 import os
 import sys
-from fastapi import FastAPI
+import uuid
+import contextvars
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from uvicorn import Server
 from uvicorn.config import Config
@@ -16,9 +18,28 @@ app.include_router(robotframework.router)
 robotlog = StaticFiles(directory="logs")
 app.mount("/logs", robotlog, name="robotlog")
 
+@app.middleware("http")
+async def request_middleware(request: Request, call_next):
+    request_id = str(uuid.uuid4())
+    
+    request.headers.__dict__["_list"].append(
+        (
+            "request_id".encode(),
+            request_id.encode()
+        )
+    )
+    try:
+        response = await call_next(request)
+
+    except Exception as ex:
+        response = JSONResponse(content={"success": False}, status_code=500)
+
+    finally:
+        response.headers["X-Request-ID"] = request_id
+        return response
 
 @app.get('/')
-def greetings():
+def greetings(request: Request):
     return 'web service for starting robot tasks'
 
 
