@@ -86,7 +86,7 @@ async def show_report(task: str):
     return RedirectResponse(f'/logs/{task}/report.html')
 
 
-def _start_all_robot_tasks(id: int, variables: list = None) -> int:
+def _start_all_robot_tasks(id: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
     if variables is None:
         variables = []
