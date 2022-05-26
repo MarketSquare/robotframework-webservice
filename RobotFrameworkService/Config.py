@@ -2,7 +2,8 @@ class Config:
     class Default:
         taskfolder = 'tasks'
         variablefiles = None
-
+        debugfile = None
+        
     """
     Service Config as Singleton
     """
