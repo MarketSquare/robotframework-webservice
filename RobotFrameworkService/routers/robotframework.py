@@ -98,6 +98,7 @@ def _start_all_robot_tasks(id: int, variables: list = None) -> int:
     return robot.run(
         config.taskfolder,
         outputdir=f'logs/{id}',
+        debugfile=config.debugfile,
         variable=variables,
         variablefile=variablefiles,
         consolewidth=120
@@ -117,7 +118,7 @@ def _start_specific_robot_task(task: str, variables: list = None) -> int:
             config.taskfolder,
             task=task,
             outputdir=f'logs/{task}',
-            
+            debugfile=config.debugfile,
             variable=variables,
             variablefile=variablefiles,
             consolewidth=120
