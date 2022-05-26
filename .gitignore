@@ -1,8 +1,10 @@
 .idea/
+.vscode/
 venv/
 output/
 log/
 logs/
 robotlog/
+robotframework_webservice.egg-info/
 
 *.egg-info

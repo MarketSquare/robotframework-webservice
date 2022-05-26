@@ -117,6 +117,7 @@ def _start_specific_robot_task(task: str, variables: list = None) -> int:
             config.taskfolder,
             task=task,
             outputdir=f'logs/{task}',
+            
             variable=variables,
             variablefile=variablefiles,
             consolewidth=120
