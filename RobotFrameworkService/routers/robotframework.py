@@ -1,6 +1,6 @@
 import time
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Path
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from RobotFrameworkService.Config import Config as RFS_Config
 
@@ -9,17 +9,16 @@ import robot
 
 router = APIRouter(
     prefix="/robotframework",
-    tags=["robotframework"],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get('/run/all')
-async def run():
+@router.get('/run/all', tags=["execution"])
+async def run(request: Request):
     """
     Run all task available.
     """
-    id = time.time_ns()
+    id = request.headers["request-id"]
     result: int = _start_all_robot_tasks(id)
     if result == 0:
         result_page = 'PASS'
@@ -34,12 +33,13 @@ async def run():
     return Response(content=result_page, media_type="text/html", status_code=status_code)
 
 
-@router.get('/run/{task}')
-async def run_task(task):
+@router.get('/run/{task}', tags=["execution"])
+async def run_task(task, request: Request):
     """
     Run a given task.
     """
-    result: int = _start_specific_robot_task(task)
+    id = request.headers["request-id"]
+    result: int = _start_specific_robot_task(id, task)
     if result == 0:
         result_page = 'PASS'
     elif 250 >= result >= 1:
@@ -50,7 +50,7 @@ async def run_task(task):
     return Response(content=result_page, media_type="text/html")
 
 
-@router.get('/run_and_show/{task}', response_class=HTMLResponse)
+@router.get('/run_and_show/{task}', tags=["execution"], response_class=HTMLResponse)
 async def start_robot_task_and_show_log(task: str, arguments: Request):
     """
     Run a given task with variables and return log.html
@@ -60,7 +60,7 @@ async def start_robot_task_and_show_log(task: str, arguments: Request):
     return RedirectResponse(f"/logs/{task}/log.html")
 
 
-@router.get('/run_and_show_report/{task}', response_class=HTMLResponse)
+@router.get('/run_and_show_report/{task}', tags=["execution"], response_class=HTMLResponse)
 async def start_robot_task_and_show_report(task: str, arguments: Request):
     """
     Run a given task with variables and return report.html
@@ -70,23 +70,31 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
     return RedirectResponse(f"/logs/{task}/report.html")
 
 
-@router.get('/show_log/{task}', response_class=HTMLResponse)
-async def show_log(task: str):
+@router.get('/show_log/{executionid}', tags=["reporting"], response_class=HTMLResponse)
+async def show_log(executionid: str = Path(
+    title="ID of a previous request",
+    description="Insert here the value of a previous response header field 'x-request-id'"
+    )
+    ):
     """
-    Show most recent log.html of given task
+    Show most recent log.html from a given execution
     """
-    return RedirectResponse(f'/logs/{task}/log.html')
+    return RedirectResponse(f'/logs/{executionid}/log.html')
 
 
-@router.get('/show_report/{task}', response_class=HTMLResponse)
-async def show_report(task: str):
+@router.get('/show_report/{executionid}', tags=["reporting"], response_class=HTMLResponse)
+async def show_report(executionid: str = Path(
+    title="ID of a previous request",
+    description="Insert here the value of a previous response header field 'x-request-id'"
+    )
+    ):
     """
-    Show most recent report.html of given task
+    Show most recent report.html from a given execution
     """
-    return RedirectResponse(f'/logs/{task}/report.html')
+    return RedirectResponse(f'/logs/{executionid}/report.html')
 
 
-def _start_all_robot_tasks(id: int, variables: list = None) -> int:
+def _start_all_robot_tasks(id: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
     if variables is None:
         variables = []
@@ -105,7 +113,7 @@ def _start_all_robot_tasks(id: int, variables: list = None) -> int:
     )
 
 
-def _start_specific_robot_task(task: str, variables: list = None) -> int:
+def _start_specific_robot_task(id: str, task: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
     if variables is None:
         variables = []
@@ -117,7 +125,7 @@ def _start_specific_robot_task(task: str, variables: list = None) -> int:
     return robot.run(
             config.taskfolder,
             task=task,
-            outputdir=f'logs/{task}',
+            outputdir=f'logs/{id}',
             debugfile=config.debugfile,
             variable=variables,
             variablefile=variablefiles,
