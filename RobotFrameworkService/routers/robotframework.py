@@ -9,12 +9,11 @@ import robot
 
 router = APIRouter(
     prefix="/robotframework",
-    tags=["robotframework"],
     responses={404: {"description": "Not found"}},
 )
 
 
-@router.get('/run/all')
+@router.get('/run/all', tags=["execution"])
 async def run(request: Request):
     """
     Run all task available.
@@ -34,7 +33,7 @@ async def run(request: Request):
     return Response(content=result_page, media_type="text/html", status_code=status_code)
 
 
-@router.get('/run/{task}')
+@router.get('/run/{task}', tags=["execution"])
 async def run_task(task, request: Request):
     """
     Run a given task.
@@ -51,7 +50,7 @@ async def run_task(task, request: Request):
     return Response(content=result_page, media_type="text/html")
 
 
-@router.get('/run_and_show/{task}', response_class=HTMLResponse)
+@router.get('/run_and_show/{task}', tags=["execution"], response_class=HTMLResponse)
 async def start_robot_task_and_show_log(task: str, arguments: Request):
     """
     Run a given task with variables and return log.html
@@ -61,7 +60,7 @@ async def start_robot_task_and_show_log(task: str, arguments: Request):
     return RedirectResponse(f"/logs/{task}/log.html")
 
 
-@router.get('/run_and_show_report/{task}', response_class=HTMLResponse)
+@router.get('/run_and_show_report/{task}', tags=["execution"], response_class=HTMLResponse)
 async def start_robot_task_and_show_report(task: str, arguments: Request):
     """
     Run a given task with variables and return report.html
@@ -71,7 +70,7 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
     return RedirectResponse(f"/logs/{task}/report.html")
 
 
-@router.get('/show_log/{executionid}', response_class=HTMLResponse)
+@router.get('/show_log/{executionid}', tags=["reporting"], response_class=HTMLResponse)
 async def show_log(executionid: str = Path(
     title="ID of a previous request",
     description="Insert here the value of a previous response header field 'x-request-id'"
@@ -83,7 +82,7 @@ async def show_log(executionid: str = Path(
     return RedirectResponse(f'/logs/{executionid}/log.html')
 
 
-@router.get('/show_report/{executionid}', response_class=HTMLResponse)
+@router.get('/show_report/{executionid}', tags=["reporting"], response_class=HTMLResponse)
 async def show_report(executionid: str = Path(
     title="ID of a previous request",
     description="Insert here the value of a previous response header field 'x-request-id'"
