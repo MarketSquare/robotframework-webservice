@@ -4,6 +4,7 @@ import uuid
 import contextvars
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from uvicorn import Server
 from uvicorn.config import Config
 
@@ -24,7 +25,7 @@ async def request_middleware(request: Request, call_next):
     
     request.headers.__dict__["_list"].append(
         (
-            "request_id".encode(),
+            "request-id".encode(),
             request_id.encode()
         )
     )
@@ -33,18 +34,19 @@ async def request_middleware(request: Request, call_next):
 
     except Exception as ex:
         response = JSONResponse(content={"success": False}, status_code=500)
+        print(ex)
 
     finally:
         response.headers["X-Request-ID"] = request_id
         return response
 
 @app.get('/')
-def greetings(request: Request):
+async def greetings(request: Request):
     return 'web service for starting robot tasks'
 
 
 @app.get('/status/')
-def server_status():
+async def server_status():
     status = {'python version': sys.version,
               'platform': sys.platform,
               'arguments': sys.argv,

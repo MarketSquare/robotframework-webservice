@@ -39,7 +39,8 @@ async def run_task(task, request: Request):
     """
     Run a given task.
     """
-    result: int = _start_specific_robot_task(task)
+    id = request.headers["request-id"]
+    result: int = _start_specific_robot_task(id, task)
     if result == 0:
         result_page = 'PASS'
     elif 250 >= result >= 1:
@@ -70,20 +71,20 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
     return RedirectResponse(f"/logs/{task}/report.html")
 
 
-@router.get('/show_log/{task}', response_class=HTMLResponse)
-async def show_log(task: str):
+@router.get('/show_log/{executionid}', response_class=HTMLResponse)
+async def show_log(executionid: str):
     """
     Show most recent log.html of given task
     """
-    return RedirectResponse(f'/logs/{task}/log.html')
+    return RedirectResponse(f'/logs/{executionid}/log.html')
 
 
-@router.get('/show_report/{task}', response_class=HTMLResponse)
-async def show_report(task: str):
+@router.get('/show_report/{executionid}', response_class=HTMLResponse)
+async def show_report(executionid: str):
     """
     Show most recent report.html of given task
     """
-    return RedirectResponse(f'/logs/{task}/report.html')
+    return RedirectResponse(f'/logs/{executionid}/report.html')
 
 
 def _start_all_robot_tasks(id: str, variables: list = None) -> int:
