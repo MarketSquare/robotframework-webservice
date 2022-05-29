@@ -14,6 +14,13 @@ pip install robotframework-webservice
 ```
 
 # Usage
+There are 2 types of endpoints: 
+1. Execution
+2. Reporting
+
+## Execution
+Endpoints that trigger execution of a robot task, for instance:
+
 Call robot task:
 
     http://localhost:5003/robotframework/run/mytask
@@ -22,7 +29,10 @@ Call robot task with variables:
 
     http://localhost:5003/robotframework/run/mytask?myVariable1=42&anotherVariable=Mustermann
 
-Response contains status and log report.
+Response contains a header field `x-request-id` that can be used to retrieve logs and reports of this execution asynchronously.
+
+## Reporting
+Endpoints that provide `log.html` and `report.html` for a specific task execution. You require the `x-request-id` from a previous response that triggered the execution.
 
 
 ## Start web service
