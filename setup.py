@@ -7,7 +7,7 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Framework :: Robot Framework
 Framework :: Robot Framework :: Tool
-Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.8
 Programming Language :: Python :: Implementation :: PyPy
 """.strip().splitlines()
 
@@ -25,7 +25,7 @@ setup(name='robotframework-webservice',
       version=get_version(),
       classifiers=CLASSIFIERS,
       description='Webservice for running Robot Framework tasks',
-      author='Deutsche Post Adress GmbH & Co. KG',
+      author='Markus Stahl',
       packages=find_packages(),
       install_requires=[
             get_requirements()
