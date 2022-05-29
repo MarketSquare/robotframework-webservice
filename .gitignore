@@ -1,10 +1,12 @@
 .idea/
 build/
+.vscode/
 __pycache__/
 venv/
 output/
 log/
 logs/
 robotlog/
+robotframework_webservice.egg-info/
 
 *.egg-info
