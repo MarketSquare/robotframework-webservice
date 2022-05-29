@@ -1,6 +1,6 @@
 import time
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Path
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from RobotFrameworkService.Config import Config as RFS_Config
 
@@ -72,17 +72,25 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
 
 
 @router.get('/show_log/{executionid}', response_class=HTMLResponse)
-async def show_log(executionid: str):
+async def show_log(executionid: str = Path(
+    title="ID of a previous request",
+    description="Insert here the value of a previous response header field 'x-request-id'"
+    )
+    ):
     """
-    Show most recent log.html of given task
+    Show most recent log.html from a given execution
     """
     return RedirectResponse(f'/logs/{executionid}/log.html')
 
 
 @router.get('/show_report/{executionid}', response_class=HTMLResponse)
-async def show_report(executionid: str):
+async def show_report(executionid: str = Path(
+    title="ID of a previous request",
+    description="Insert here the value of a previous response header field 'x-request-id'"
+    )
+    ):
     """
-    Show most recent report.html of given task
+    Show most recent report.html from a given execution
     """
     return RedirectResponse(f'/logs/{executionid}/report.html')
 
