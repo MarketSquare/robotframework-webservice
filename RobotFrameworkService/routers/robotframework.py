@@ -46,7 +46,7 @@ async def run_task(task, request: Request):
         result_page = f'FAIL: {result} tasks failed'
     else:
         result_page = f'FAIL: Errorcode {result}'
-    result_page += f'<p><a href="/logs/{task}/log.html">Go to log</a></p>'
+    result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
     return Response(content=result_page, media_type="text/html")
 
 
