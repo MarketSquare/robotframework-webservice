@@ -39,7 +39,8 @@ async def run_task(task, request: Request):
     Run a given task.
     """
     id = request.headers["request-id"]
-    result: int = _start_specific_robot_task(id, task)
+    variables = RequestHelper.parse_variables_from_query(request)
+    result: int = _start_specific_robot_task(id, task, variables=variables)
     if result == 0:
         result_page = 'PASS'
     elif 250 >= result >= 1:
@@ -55,7 +56,7 @@ async def start_robot_task_and_show_log(task: str, arguments: Request):
     """
     Run a given task with variables and return log.html
     """
-    variables = [f'{k}:{v}' for k, v in arguments.query_params.items()]
+    variables = RequestHelper.parse_variables_from_query(arguments)
     _start_specific_robot_task(task, variables)
     return RedirectResponse(f"/logs/{task}/log.html")
 
@@ -65,7 +66,7 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
     """
     Run a given task with variables and return report.html
     """
-    variables = [f'{k}:{v}' for k, v in arguments.query_params.items()]
+    variables = RequestHelper.parse_variables_from_query(arguments)
     _start_specific_robot_task(task, variables)
     return RedirectResponse(f"/logs/{task}/report.html")
 
@@ -131,3 +132,8 @@ def _start_specific_robot_task(id: str, task: str, variables: list = None) -> in
             variablefile=variablefiles,
             consolewidth=120
         )
+
+class RequestHelper:
+    @staticmethod
+    def parse_variables_from_query(arguments: Request) -> list:
+        return [f'{k}:{v}' for k, v in arguments.query_params.items()]
