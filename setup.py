@@ -34,5 +34,5 @@ setup(name='robotframework-webservice',
       ],
       long_description=get_long_description(),
       long_description_content_type='text/markdown',
-      url='https://github.com/postadress/robotframework-webservice',
+      url='https://github.com/MarketSquare/robotframework-webservice',
       zip_safe=False)
