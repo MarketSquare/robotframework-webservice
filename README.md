@@ -10,9 +10,33 @@ A web service managing Robot Framework tasks.
 
 This web service shall start Robot Framework tasks and return and cache the according reports.
 
-# Install
+# Installation and Execution
+*Default docker image does not support variable files, yet*
+
+## Docker
+```
+docker pull ghcr.io/marketsquare/robotframework-webservice:master
+```
+After that you can run the image and map your test cases in to the webservice with a volumen:
+```
+docker run -v <host directory of test cases>:/robot/tests --env SUITE_FOLDER=tests rf-webservice:latest
+```
+
+## Podman
+Almost as Docker, but you might need to attach the webservice to the host network:
+```
+podman run --network host -v ./tasks:/robot/tasks --env SUITE_FOLDER=tasks rf-webservice:latest
+```
+
+## Local
 ```
 pip install robotframework-webservice
+```
+
+and execute from command line:
+
+```
+python -m RobotFrameworkService.main -p 5003 -t path_to_my_taskfolder
 ```
 
 # Usage

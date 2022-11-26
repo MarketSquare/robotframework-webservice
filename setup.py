@@ -5,10 +5,12 @@ CLASSIFIERS = """
 Development Status :: 4 - Beta
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
+Framework :: FastAPI
 Framework :: Robot Framework
-Framework :: Robot Framework :: Tool
 Programming Language :: Python :: 3.8
-Programming Language :: Python :: Implementation :: PyPy
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
+Programming Language :: Python :: 3.11
 """.strip().splitlines()
 
 def get_long_description():
