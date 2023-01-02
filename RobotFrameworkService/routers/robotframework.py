@@ -1,11 +1,13 @@
-import time
+import pathlib
 
 from fastapi import APIRouter, Request, Path
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
+from starlette.responses import JSONResponse
+
 from RobotFrameworkService.Config import Config as RFS_Config
+from ..constants import LOGS
 
 import robot
-
 
 router = APIRouter(
     prefix="/robotframework",
@@ -75,8 +77,8 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
 async def show_log(executionid: str = Path(
     title="ID of a previous request",
     description="Insert here the value of a previous response header field 'x-request-id'"
-    )
-    ):
+)
+):
     """
     Show most recent log.html from a given execution
     """
@@ -87,12 +89,25 @@ async def show_log(executionid: str = Path(
 async def show_report(executionid: str = Path(
     title="ID of a previous request",
     description="Insert here the value of a previous response header field 'x-request-id'"
-    )
-    ):
+)
+):
     """
     Show most recent report.html from a given execution
     """
     return RedirectResponse(f'/logs/{executionid}/report.html')
+
+
+@router.get('/executions', tags=["execution"], response_class=JSONResponse)
+async def show_execution_ids():
+    """
+    get all execution ids for the finished tasks
+    """
+    logs = pathlib.Path(f'./{LOGS}')
+    is_execution_finished = (lambda x:
+                             x.is_dir()
+                             and (x / 'report.html').exists()
+                             and (x / 'log.html').exists())
+    return [log.stem for log in logs.iterdir() if is_execution_finished(log)]
 
 
 def _start_all_robot_tasks(id: str, variables: list = None) -> int:
@@ -100,9 +115,9 @@ def _start_all_robot_tasks(id: str, variables: list = None) -> int:
     if variables is None:
         variables = []
     if config.variablefiles is None:
-        variablefiles=[]
+        variablefiles = []
     else:
-        variablefiles=config.variablefiles
+        variablefiles = config.variablefiles
 
     return robot.run(
         config.taskfolder,
@@ -119,19 +134,20 @@ def _start_specific_robot_task(id: str, task: str, variables: list = None) -> in
     if variables is None:
         variables = []
     if config.variablefiles is None:
-        variablefiles=[]
+        variablefiles = []
     else:
-        variablefiles=config.variablefiles
+        variablefiles = config.variablefiles
 
     return robot.run(
-            config.taskfolder,
-            task=task,
-            outputdir=f'logs/{id}',
-            debugfile=config.debugfile,
-            variable=variables,
-            variablefile=variablefiles,
-            consolewidth=120
-        )
+        config.taskfolder,
+        task=task,
+        outputdir=f'logs/{id}',
+        debugfile=config.debugfile,
+        variable=variables,
+        variablefile=variablefiles,
+        consolewidth=120
+    )
+
 
 class RequestHelper:
     @staticmethod
