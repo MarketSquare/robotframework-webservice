@@ -1,7 +1,7 @@
 import os
+import pathlib
 import sys
 import uuid
-import contextvars
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
@@ -11,13 +11,14 @@ from uvicorn.config import Config
 from RobotFrameworkService.Config import Config as RFS_Config
 from RobotFrameworkService.routers import robotframework
 from RobotFrameworkService.version import get_version
+from .constants import APP_NAME, LOGS
 
 
-APP_NAME = 'Robot Framework Server'
+pathlib.Path(LOGS).mkdir(exist_ok=True)
 app = FastAPI(title=APP_NAME, version=get_version())
 app.include_router(robotframework.router)
-robotlog = StaticFiles(directory="logs")
-app.mount("/logs", robotlog, name="robotlog")
+app.mount(f"/{LOGS}", StaticFiles(directory=LOGS), name="robotlog")
+
 
 @app.middleware("http")
 async def request_middleware(request: Request, call_next):
@@ -39,6 +40,7 @@ async def request_middleware(request: Request, call_next):
     finally:
         response.headers["X-Request-ID"] = request_id
         return response
+
 
 @app.get('/')
 async def greetings(request: Request):
@@ -70,7 +72,7 @@ if __name__ == "__main__":
     parser.add_argument("--removekeywords", default="tag:secret", help="Remove keyword details from reports")
     args = parser.parse_args()
 
-    RFS_Config().cmd_args=args
+    RFS_Config().cmd_args = args
 
     server = Server(config=(Config(app=app, loop="asyncio", host="0.0.0.0", port=args.port)))
     server.run()
