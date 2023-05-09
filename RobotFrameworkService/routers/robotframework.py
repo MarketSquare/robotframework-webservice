@@ -11,7 +11,7 @@ import robot
 
 router = APIRouter(
     prefix="/robotframework",
-    responses={404: {"description": "Not found"}},
+    responses={404: {"description": "Not found: Webservice is either busy or requested endpoint is not supported."}},
 )
 
 
