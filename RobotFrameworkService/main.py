@@ -67,6 +67,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--port", default=os.environ.get('RFS_PORT', default=5003), type=int, help="Port of Robot Framework Webservice")
     parser.add_argument("-V", "--variablefiles", nargs='*', default=None, help="List of files containing variables")
     parser.add_argument("-b", "--debugfile", default=None, help="Debug output file")
+    parser.add_argument("--removekeywords", default="tag:secret", help="Remove keyword details from reports")
     args = parser.parse_args()
 
     RFS_Config().cmd_args=args
