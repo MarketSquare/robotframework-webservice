@@ -24,14 +24,16 @@ async def run(request: Request):
     result: int = _start_all_robot_tasks(id)
     if result == 0:
         result_page = 'PASS'
+        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
         status_code = 200
     elif 250 >= result >= 1:
         result_page = f'FAIL: {result} tasks failed'
+        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
         status_code = 400
     else:
         result_page = f'FAIL: Errorcode {result}'
         status_code = 500
-    result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
+    
     return Response(content=result_page, media_type="text/html", status_code=status_code)
 
 
@@ -45,8 +47,29 @@ async def run_task(task, request: Request):
     result: int = _start_specific_robot_task(id, task, variables=variables)
     if result == 0:
         result_page = 'PASS'
+        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
+        
     elif 250 >= result >= 1:
         result_page = f'FAIL: {result} tasks failed'
+        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
+
+    else:
+        result_page = f'FAIL: Errorcode {result}'
+    
+    return Response(content=result_page, media_type="text/html")
+
+@router.get('/run/suite/{suite}', tags=["execution"])
+async def run_task(suite, request: Request):
+    """
+    Run a given suite.
+    """
+    id = request.headers["request-id"]
+    variables = RequestHelper.parse_variables_from_query(request)
+    result: int = _start_specific_robot_suite(id, suite, variables=variables)
+    if result == 0:
+        result_page = 'PASS'
+    elif 250 >= result >= 1:
+        result_page = f'FAIL: {result} tasks for suite {suite} failed'
     else:
         result_page = f'FAIL: Errorcode {result}'
     result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
@@ -128,6 +151,24 @@ def _start_all_robot_tasks(id: str, variables: list = None) -> int:
         consolewidth=120
     )
 
+def _start_specific_robot_suite(id: str, suite: str, variables: list=None) -> int:
+    config = RFS_Config().cmd_args
+    if variables is None:
+        variables = []
+    if config.variablefiles is None:
+        variablefiles = []
+    else:
+        variablefiles = config.variablefiles
+
+    return robot.run(
+        config.taskfolder,
+        suite=suite,
+        outputdir=f'logs/{id}',
+        debugfile=config.debugfile,
+        variable=variables,
+        variablefile=variablefiles,
+        consolewidth=120
+    )
 
 def _start_specific_robot_task(id: str, task: str, variables: list = None) -> int:
     config = RFS_Config().cmd_args
