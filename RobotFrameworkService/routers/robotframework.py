@@ -67,7 +67,7 @@ async def run_task(task, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)   
-    response = await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
+    response = await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'id': id, 'task':task, 'variables':variables})
     return response
 
 
@@ -88,7 +88,7 @@ async def run_suite(suite, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
-    response = await run_robot_and_wait(func=_start_specific_robot_suite, kwargs={'suite':suite, 'variables':variables})
+    response = await run_robot_and_wait(func=_start_specific_robot_suite, kwargs={'id': id, 'suite':suite, 'variables':variables})
     return response
 
 @router.get('/run/suite/{suite}/async', tags=["execution"])
