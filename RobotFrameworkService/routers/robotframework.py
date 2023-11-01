@@ -110,7 +110,7 @@ async def start_robot_task_and_show_log(task: str, request: Request):
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
     await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'id':id, 'task':task, 'variables':variables})
-    return RedirectResponse(f"/logs/{task}/log.html")
+    return RedirectResponse(f"/logs/{id}/log.html")
 
 
 @router.get('/run_and_show_report/{task}', tags=["execution"], response_class=HTMLResponse)
@@ -121,7 +121,7 @@ async def start_robot_task_and_show_report(task: str, request: Request):
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
     await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'id':id, 'task':task, 'variables':variables})
-    return RedirectResponse(f"/logs/{task}/report.html")
+    return RedirectResponse(f"/logs/{id}/report.html")
 
 
 @router.get('/show_log/{executionid}', tags=["reporting"], response_class=HTMLResponse)
