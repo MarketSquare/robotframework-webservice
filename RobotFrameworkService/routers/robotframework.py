@@ -9,10 +9,19 @@ from ..constants import LOGS
 
 import robot
 
+import multiprocessing as mp
+
 router = APIRouter(
     prefix="/robotframework",
     responses={404: {"description": "Not found: Webservice is either busy or requested endpoint is not supported."}},
 )
+
+@router.get('/run/async/all', tags=["execution"])
+async def run_async(request: Request):
+    id = request.headers["request-id"]
+    p = mp.Process(target=_start_all_robot_tasks, args=[id])
+    p.start()
+    return id
 
 
 @router.get('/run/all', tags=["execution"])
