@@ -19,8 +19,9 @@ router = APIRouter(
 async def run_robot_in_brackground(func, args=[], kwargs={}):
     p = mp.Process(target=func, args=args, kwargs=kwargs)
     p.start()
+    return p
 
-async def run_robot(func, args=[], kwargs={}):
+async def run_robot_and_wait(func, args=[], kwargs={}):
     result: int = func(*args, **kwargs)
     if result == 0:
         result_page = 'PASS'
@@ -36,22 +37,23 @@ async def run_robot(func, args=[], kwargs={}):
     
     return Response(content=result_page, media_type="text/html", status_code=status_code)
 
-@router.get('/run/async/all', tags=["execution"])
-async def run_async(request: Request):
-    id = request.headers["request-id"]
-    await run_robot_in_brackground(func=_start_all_robot_tasks, args=[id])
-    return id
-
 
 @router.get('/run/all', tags=["execution"])
-async def run(request: Request):
+async def run_all(request: Request):
     """
     Run all task available.
     """
     id = request.headers["request-id"]
-    response = await run_robot(func=_start_all_robot_tasks, args=[id])
+    response = await run_robot_and_wait(func=_start_all_robot_tasks, args=[id])
     
     return response
+
+
+@router.get('/run/all/async', tags=["execution"])
+async def run_all_async(request: Request):
+    id = request.headers["request-id"]
+    await run_robot_in_brackground(func=_start_all_robot_tasks, args=[id])
+    return id
 
 
 @router.get('/run/{task}', tags=["execution"])
@@ -61,8 +63,19 @@ async def run_task(task, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)   
-    response = await run_robot(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
+    response = await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
     return response
+
+
+@router.get('/run/{task}/async', tags=["execution"])
+async def run_task_async(task, request: Request):
+    """
+    Run a given task.
+    """
+    id = request.headers["request-id"]
+    variables = RequestHelper.parse_variables_from_query(request)   
+    await run_robot_in_brackground(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
+    return id
 
 @router.get('/run/suite/{suite}', tags=["execution"])
 async def run_suite(suite, request: Request):
@@ -71,8 +84,18 @@ async def run_suite(suite, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
-    response = await run_robot(func=_start_specific_robot_suite, kwargs={'suite':suite, 'variables':variables})
+    response = await run_robot_and_wait(func=_start_specific_robot_suite, kwargs={'suite':suite, 'variables':variables})
     return response
+
+@router.get('/run/suite/{suite}/async', tags=["execution"])
+async def run_suite_async(suite, request: Request):
+    """
+    Run a given suite.
+    """
+    id = request.headers["request-id"]
+    variables = RequestHelper.parse_variables_from_query(request)
+    await run_robot_in_brackground(func=_start_specific_robot_suite, kwargs={'suite':suite, 'variables':variables})
+    return id
 
 
 @router.get('/run_and_show/{task}', tags=["execution"], response_class=HTMLResponse)
