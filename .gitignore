@@ -3,10 +3,12 @@ build/
 .vscode/
 __pycache__/
 venv/
+.venv/
 output/
 log/
 logs/
 robotlog/
 robotframework_webservice.egg-info/
+results/
 
 *.egg-info
