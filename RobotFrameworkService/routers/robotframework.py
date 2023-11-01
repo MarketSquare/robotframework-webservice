@@ -59,7 +59,7 @@ async def run_task(task, request: Request):
     return Response(content=result_page, media_type="text/html")
 
 @router.get('/run/suite/{suite}', tags=["execution"])
-async def run_task(suite, request: Request):
+async def run_suite(suite, request: Request):
     """
     Run a given suite.
     """
