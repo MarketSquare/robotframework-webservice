@@ -49,7 +49,7 @@ class EndpointTesttest_s(unittest.TestCase):
     def __get_robot_webservice(self,endpoint, expected_response_code=200):
         with TestClient(app) as client:
             response = client.get(endpoint)
-        self.assertEqual(expected_response_code, response.status_code)
+        self.assertEqual(expected_response_code, response.status_code, response.text)
         return response
 
     def __is_robot_passed(self, response, msg=None):
