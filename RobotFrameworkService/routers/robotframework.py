@@ -22,6 +22,7 @@ async def run_robot_in_brackground(func, args=[], kwargs={}):
     return p
 
 async def run_robot_and_wait(func, args=[], kwargs={}):
+    # this is still blocking
     result: int = func(*args, **kwargs)
     if result == 0:
         result_page = 'PASS'
@@ -107,7 +108,7 @@ async def start_robot_task_and_show_log(task: str, arguments: Request):
     Run a given task with variables and return log.html
     """
     variables = RequestHelper.parse_variables_from_query(arguments)
-    _start_specific_robot_task(task, variables)
+    await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
     return RedirectResponse(f"/logs/{task}/log.html")
 
 
@@ -117,7 +118,7 @@ async def start_robot_task_and_show_report(task: str, arguments: Request):
     Run a given task with variables and return report.html
     """
     variables = RequestHelper.parse_variables_from_query(arguments)
-    _start_specific_robot_task(task, variables)
+    await run_robot_and_wait(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
     return RedirectResponse(f"/logs/{task}/report.html")
 
 
