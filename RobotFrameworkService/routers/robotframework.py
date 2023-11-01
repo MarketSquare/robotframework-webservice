@@ -16,21 +16,12 @@ router = APIRouter(
     responses={404: {"description": "Not found: Webservice is either busy or requested endpoint is not supported."}},
 )
 
-@router.get('/run/async/all', tags=["execution"])
-async def run_async(request: Request):
-    id = request.headers["request-id"]
-    p = mp.Process(target=_start_all_robot_tasks, args=[id])
+async def run_robot_in_brackground(func, args=[], kwargs={}):
+    p = mp.Process(target=func, args=args, kwargs=kwargs)
     p.start()
-    return id
 
-
-@router.get('/run/all', tags=["execution"])
-async def run(request: Request):
-    """
-    Run all task available.
-    """
-    id = request.headers["request-id"]
-    result: int = _start_all_robot_tasks(id)
+async def run_robot(func, args=[], kwargs={}):
+    result: int = func(*args, **kwargs)
     if result == 0:
         result_page = 'PASS'
         result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
@@ -45,6 +36,23 @@ async def run(request: Request):
     
     return Response(content=result_page, media_type="text/html", status_code=status_code)
 
+@router.get('/run/async/all', tags=["execution"])
+async def run_async(request: Request):
+    id = request.headers["request-id"]
+    await run_robot_in_brackground(func=_start_all_robot_tasks, args=[id])
+    return id
+
+
+@router.get('/run/all', tags=["execution"])
+async def run(request: Request):
+    """
+    Run all task available.
+    """
+    id = request.headers["request-id"]
+    response = await run_robot(func=_start_all_robot_tasks, args=[id])
+    
+    return response
+
 
 @router.get('/run/{task}', tags=["execution"])
 async def run_task(task, request: Request):
@@ -52,20 +60,9 @@ async def run_task(task, request: Request):
     Run a given task.
     """
     id = request.headers["request-id"]
-    variables = RequestHelper.parse_variables_from_query(request)
-    result: int = _start_specific_robot_task(id, task, variables=variables)
-    if result == 0:
-        result_page = 'PASS'
-        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
-        
-    elif 250 >= result >= 1:
-        result_page = f'FAIL: {result} tasks failed'
-        result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
-
-    else:
-        result_page = f'FAIL: Errorcode {result}'
-    
-    return Response(content=result_page, media_type="text/html")
+    variables = RequestHelper.parse_variables_from_query(request)   
+    response = await run_robot(func=_start_specific_robot_task, kwargs={'task':task, 'variables':variables})
+    return response
 
 @router.get('/run/suite/{suite}', tags=["execution"])
 async def run_suite(suite, request: Request):
@@ -74,15 +71,8 @@ async def run_suite(suite, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
-    result: int = _start_specific_robot_suite(id, suite, variables=variables)
-    if result == 0:
-        result_page = 'PASS'
-    elif 250 >= result >= 1:
-        result_page = f'FAIL: {result} tasks for suite {suite} failed'
-    else:
-        result_page = f'FAIL: Errorcode {result}'
-    result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
-    return Response(content=result_page, media_type="text/html")
+    response = await run_robot(func=_start_specific_robot_suite, kwargs={'suite':suite, 'variables':variables})
+    return response
 
 
 @router.get('/run_and_show/{task}', tags=["execution"], response_class=HTMLResponse)
