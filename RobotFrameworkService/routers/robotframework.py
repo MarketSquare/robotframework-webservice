@@ -120,6 +120,18 @@ async def show_report(executionid: str = Path(
     return RedirectResponse(f'/logs/{executionid}/report.html')
 
 
+@router.get('/show_output/{executionid}', tags=["reporting"], response_class=HTMLResponse)
+async def show_raw_output(executionid: str = Path(
+    title="ID of a previous request",
+    description="Insert here the value of a previous response header field 'x-request-id'"
+)
+):
+    """
+    Show most recent report.html from a given execution
+    """
+    return RedirectResponse(f'/logs/{executionid}/output.xml')
+
+
 @router.get('/executions', tags=["execution"], response_class=JSONResponse)
 async def show_execution_ids():
     """
