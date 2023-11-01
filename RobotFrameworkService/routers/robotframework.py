@@ -51,6 +51,9 @@ async def run_all(request: Request):
 
 @router.get('/run/all/async', tags=["execution"])
 async def run_all_async(request: Request):
+    """
+    Starts all Robot tasks. Returns execution id and continures to run Robot tasks in background.
+    """
     id = request.headers["request-id"]
     await run_robot_in_brackground(func=_start_all_robot_tasks, args=[id])
     return id
@@ -70,7 +73,7 @@ async def run_task(task, request: Request):
 @router.get('/run/{task}/async', tags=["execution"])
 async def run_task_async(task, request: Request):
     """
-    Run a given task.
+    Start a given task. Returns execution id and continues to run Robot task in background.
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)   
@@ -90,7 +93,7 @@ async def run_suite(suite, request: Request):
 @router.get('/run/suite/{suite}/async', tags=["execution"])
 async def run_suite_async(suite, request: Request):
     """
-    Run a given suite.
+    Start a given suite. Returns execution id and continues to run Robot suite in background.
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
