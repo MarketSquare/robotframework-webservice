@@ -1,4 +1,4 @@
-[![PyPi license](https://badgen.net/github/license/Marketsquare/robotframework-webservice/)](https://pypi.com/project/robotframework-webservice/) [![PyPi version](https://badgen.net/pypi/v/robotframework-webservice/)](https://pypi.org/project/robotframework-webservice) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/robotframework-webservice.svg)](https://pypi.python.org/pypi/robotframework-webservice/) [![PyPI download month](https://img.shields.io/pypi/dm/robotframework-webservice.svg)](https://pypi.python.org/pypi/robotframework-webservice/) 
+[![PyPi license](https://badgen.net/github/license/Marketsquare/robotframework-webservice/)](https://pypi.com/project/robotframework-webservice/) [![PyPI pyversions](https://img.shields.io/pypi/pyversions/robotframework-webservice.svg)](https://pypi.python.org/pypi/robotframework-webservice/) [![PyPI download month](https://img.shields.io/pypi/dm/robotframework-webservice.svg)](https://pypi.python.org/pypi/robotframework-webservice/) 
 
 # Robot Task Webservice
 
