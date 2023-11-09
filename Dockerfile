@@ -1,5 +1,4 @@
-# under construction
-FROM python:3
+FROM python:3.11
 
 ENV SUITE_FOLDER .
 ENV PORT 5003
