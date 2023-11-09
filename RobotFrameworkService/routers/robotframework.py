@@ -160,8 +160,9 @@ async def start_robot_task_and_show_report(task: str, request: Request):
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
     await run_robot_and_wait(
+        request.app.state.executor,
         func=_start_specific_robot_task,
-        kwargs={"id": id, "task": task, "variables": variables},
+        args=[id, task, variables],
     )
     return RedirectResponse(f"/logs/{id}/report.html")
 
