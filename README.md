@@ -9,15 +9,23 @@ A web service managing Robot Framework tasks/tests.
 This web service shall start Robot Framework tasks/tests and return and cache the according reports.
 
 # Installation and Execution
-*Default docker image does not support variable files, yet*
 
 ## Docker
+You can run the image and map your test cases into the webservice with a volume :
 ```
-docker pull ghcr.io/marketsquare/robotframework-webservice:master
+docker run --rm --publish 5003:5003 \
+           --volume <host directory of test cases>:/robot/tests \
+           --env SUITE_FOLDER=tests \
+           ghcr.io/marketsquare/robotframework-webservice:master
 ```
-After that you can run the image and map your test cases in to the webservice with a volumen:
+You can also run the image and map your test cases and your variable files (separated by spaces) into the webservice with volumes :
 ```
-docker run -v <host directory of test cases>:/robot/tests --env SUITE_FOLDER=tests rf-webservice:latest
+docker run --rm --publish 5003:5003 \
+           --volume <host directory of test cases>:/robot/tests \
+           --volume <host directory of variable files>:/robot/variables \
+           --env SUITE_FOLDER=tests \
+           --env "VARIABLE_FILES=variables/variables.py variables/variables2.py" \
+           ghcr.io/marketsquare/robotframework-webservice:master
 ```
 
 ## Podman

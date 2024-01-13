@@ -1,6 +1,7 @@
 FROM python:3.11
 
 ENV SUITE_FOLDER .
+ENV VARIABLE_FILES ""
 ENV PORT 5003
 
 WORKDIR robot
@@ -10,4 +11,6 @@ RUN pip install robotframework-webservice
 
 EXPOSE ${PORT}
 
-ENTRYPOINT exec python -m RobotFrameworkService.main -p ${PORT} -t ${SUITE_FOLDER}
+COPY docker-entrypoint.sh entrypoint.sh
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["/robot/entrypoint.sh"]
