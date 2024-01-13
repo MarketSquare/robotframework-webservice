@@ -1,6 +1,6 @@
 class Config:
     class Default:
-        taskfolder = "tasks"
+        taskfolder = "examples"
         variablefiles = None
         debugfile = None
 
