@@ -34,6 +34,7 @@ async def run_robot_and_wait(executor: Executor, func, args):
     # run robot concurrently and wait for it.
     loop = asyncio.get_event_loop()
     result: int = await loop.run_in_executor(executor, func, *args)
+    id = args[0]
     if result == 0:
         result_page = "PASS"
         result_page += f'<p><a href="/logs/{id}/log.html">Go to log</a></p>'
