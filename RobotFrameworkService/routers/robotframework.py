@@ -12,9 +12,6 @@ import robot
 
 import multiprocessing as mp
 
-from concurrent.futures import Future
-import threading
-
 import asyncio
 
 router = APIRouter(
@@ -27,13 +24,13 @@ router = APIRouter(
 )
 
 
-async def run_robot_in_brackground(func, args=[], kwargs={}):
-    p = mp.Process(target=func, args=args, kwargs=kwargs)
+async def run_robot_in_background(func, args):
+    p = mp.Process(target=func, args=args)
     p.start()
     return p
 
 
-async def run_robot_and_wait(executor: Executor, func, args=[], kwargs={}):
+async def run_robot_and_wait(executor: Executor, func, args):
     # run robot concurrently and wait for it.
     loop = asyncio.get_event_loop()
     result: int = await loop.run_in_executor(executor, func, *args)
@@ -60,8 +57,9 @@ async def run_all(request: Request):
     Run all task available.
     """
     id = request.headers["request-id"]
+    config = RFS_Config().cmd_args
     response = await run_robot_and_wait(
-        request.app.state.executor, func=_start_all_robot_tasks, args=[id]
+        request.app.state.executor, func=_start_all_robot_tasks, args=[id, config]
     )
 
     return response
@@ -73,7 +71,8 @@ async def run_all_async(request: Request):
     Starts all Robot tasks. Returns execution id and continures to run Robot tasks in background.
     """
     id = request.headers["request-id"]
-    await run_robot_in_brackground(func=_start_all_robot_tasks, args=[id])
+    config = RFS_Config().cmd_args
+    await run_robot_in_background(func=_start_all_robot_tasks, args=[id, config])
     return id
 
 
@@ -84,10 +83,11 @@ async def run_task(task, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
+    config = RFS_Config().cmd_args
     response = await run_robot_and_wait(
         request.app.state.executor,
         func=_start_specific_robot_task,
-        args=[id, task, variables],
+        args=[id, task, variables, config],
     )
     return response
 
@@ -99,9 +99,10 @@ async def run_task_async(task, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
-    await run_robot_in_brackground(
+    config = RFS_Config().cmd_args
+    await run_robot_in_background(
         func=_start_specific_robot_task,
-        kwargs={"id": id, "task": task, "variables": variables},
+        args=[id, task, variables, config]
     )
     return id
 
@@ -113,10 +114,11 @@ async def run_suite(suite, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
+    config = RFS_Config().cmd_args
     response = await run_robot_and_wait(
         request.app.state.executor,
         func=_start_specific_robot_suite,
-        args=[id, suite, variables],
+        args=[id, suite, variables, config],
     )
     return response
 
@@ -128,9 +130,10 @@ async def run_suite_async(suite, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
-    await run_robot_in_brackground(
+    config = RFS_Config().cmd_args
+    await run_robot_in_background(
         func=_start_specific_robot_suite,
-        kwargs={"id": id, "suite": suite, "variables": variables},
+        args=[id, suite, variables, config]
     )
     return id
 
@@ -142,10 +145,11 @@ async def start_robot_task_and_show_log(task: str, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
+    config = RFS_Config().cmd_args
     await run_robot_and_wait(
         request.app.state.executor,
         func=_start_specific_robot_task,
-        args=[id, task, variables],
+        args=[id, task, variables, config],
     )
     return RedirectResponse(f"/logs/{id}/log.html")
 
@@ -159,10 +163,11 @@ async def start_robot_task_and_show_report(task: str, request: Request):
     """
     id = request.headers["request-id"]
     variables = RequestHelper.parse_variables_from_query(request)
+    config = RFS_Config().cmd_args
     await run_robot_and_wait(
         request.app.state.executor,
         func=_start_specific_robot_task,
-        args=[id, task, variables],
+        args=[id, task, variables, config],
     )
     return RedirectResponse(f"/logs/{id}/report.html")
 
@@ -224,10 +229,7 @@ async def show_execution_ids():
     return [log.stem for log in logs.iterdir() if is_execution_finished(log)]
 
 
-def _start_all_robot_tasks(id: str, variables: list = None) -> int:
-    config = RFS_Config().cmd_args
-    if variables is None:
-        variables = []
+def _start_all_robot_tasks(id: str, config) -> int:
     if config.variablefiles is None:
         variablefiles = []
     else:
@@ -237,16 +239,12 @@ def _start_all_robot_tasks(id: str, variables: list = None) -> int:
         config.taskfolder,
         outputdir=f"logs/{id}",
         debugfile=config.debugfile,
-        variable=variables,
         variablefile=variablefiles,
         consolewidth=120,
     )
 
 
-def _start_specific_robot_suite(id: str, suite: str, variables: list = None) -> int:
-    config = RFS_Config().cmd_args
-    if variables is None:
-        variables = []
+def _start_specific_robot_suite(id: str, suite: str, variables: list, config) -> int:
     if config.variablefiles is None:
         variablefiles = []
     else:
@@ -263,10 +261,7 @@ def _start_specific_robot_suite(id: str, suite: str, variables: list = None) -> 
     )
 
 
-def _start_specific_robot_task(id: str, task: str, variables: list = None) -> int:
-    config = RFS_Config().cmd_args
-    if variables is None:
-        variables = []
+def _start_specific_robot_task(id: str, task: str, variables: list, config) -> int:
     if config.variablefiles is None:
         variablefiles = []
     else:
