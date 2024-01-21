@@ -11,7 +11,7 @@ from uvicorn import Server
 from uvicorn.config import Config
 
 from RobotFrameworkService.Config import Config as RFS_Config
-from RobotFrameworkService.routers import robotframework
+from RobotFrameworkService.routers import robotframework, robotframework_run
 from RobotFrameworkService.version import get_version
 from .constants import APP_NAME, LOGS
 
@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
 pathlib.Path(LOGS).mkdir(exist_ok=True)
 app = FastAPI(title=APP_NAME, version=get_version(), lifespan=lifespan)
 app.include_router(robotframework.router)
+app.include_router(robotframework_run.router)
 app.mount(f"/{LOGS}", StaticFiles(directory=LOGS), name="robotlog")
 
 

@@ -67,6 +67,18 @@ class EndpointTesttest_s(unittest.TestCase):
             report_response = client.get(f"/robotframework/show_report/{execution_id}")
         self.assertEqual(200, report_response.status_code)
 
+    def test_is_robot_run(self):
+        with TestClient(app) as client:
+            response = client.post("/robotframework/run", json={"task": "Another task", "test": "Demonstration Test"})
+            self.assertEqual(400, response.status_code)
+            self.assertEqual("Options test and task cannot be both specified", response.text)
+
+            response = client.post("/robotframework/run", json={"task": "Another task", "sync": True})
+            self.assertEqual(200, response.status_code)
+
+            response = client.post("/robotframework/run", json={"paths": ["examples"], "test": "Demonstration Test", "sync": True})
+            self.assertEqual(200, response.status_code)
+
     def __get_robot_webservice(self, endpoint, expected_response_code=200):
         with TestClient(app) as client:
             response = client.get(endpoint)
