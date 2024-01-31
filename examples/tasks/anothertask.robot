@@ -1,3 +1,3 @@
-*** Task ***
+*** Tasks ***
 Another task
     Log    ABCDEFG

@@ -2,28 +2,36 @@
 
 # Robot Task Webservice
 
-A web service managing Robot Framework tasks.
+A web service managing Robot Framework tasks/tests.
 
 # Goal
 
-This web service shall start Robot Framework tasks and return and cache the according reports.
+This web service shall start Robot Framework tasks/tests and return and cache the according reports.
 
 # Installation and Execution
-*Default docker image does not support variable files, yet*
 
 ## Docker
+You can run the image and map your test cases into the webservice with a volume :
 ```
-docker pull ghcr.io/marketsquare/robotframework-webservice:master
+docker run --rm --publish 5003:5003 \
+           --volume <host directory of test cases>:/robot/tests \
+           --env SUITE_FOLDER=tests \
+           ghcr.io/marketsquare/robotframework-webservice:master
 ```
-After that you can run the image and map your test cases in to the webservice with a volumen:
+You can also run the image and map your test cases and your variable files (separated by spaces) into the webservice with volumes :
 ```
-docker run -v <host directory of test cases>:/robot/tests --env SUITE_FOLDER=tests rf-webservice:latest
+docker run --rm --publish 5003:5003 \
+           --volume <host directory of test cases>:/robot/tests \
+           --volume <host directory of variable files>:/robot/variables \
+           --env SUITE_FOLDER=tests \
+           --env "VARIABLE_FILES=variables/variables.py variables/variables2.py" \
+           ghcr.io/marketsquare/robotframework-webservice:master
 ```
 
 ## Podman
 Almost as Docker, but you might need to attach the webservice to the host network:
 ```
-podman run --network host -v ./tasks:/robot/tasks --env SUITE_FOLDER=tasks rf-webservice:latest
+podman run --network host -v ./examples:/robot/tasks --env SUITE_FOLDER=tasks rf-webservice:latest
 ```
 
 ## Local
@@ -43,13 +51,13 @@ There are 2 types of endpoints:
 2. Reporting
 
 ## Execution
-Endpoints that trigger execution of a robot task, for instance:
+Endpoints that trigger execution of a robot task/test, for instance:
 
-Call robot task:
+Call robot task/test:
 
     http://localhost:5003/robotframework/run/mytask
 
-Call robot task with variables:
+Call robot task/test with variables:
 
     http://localhost:5003/robotframework/run/mytask?myVariable1=42&anotherVariable=Mustermann
 
@@ -58,7 +66,7 @@ Response contains a header field `x-request-id` that can be used to retrieve log
 There are endpoints for synchronous and asynchronous request:
 
 ```
-# connection remains open for duration of my task
+# connection remains open for duration of my task/test
 http://localhost:5003/robotframework/run/mytask
 
 # connection closes immediately - result must be requested with the x-request-id
@@ -107,8 +115,8 @@ Swagger-UI is available under `http://localhost:5003/docs`
 
 # Demo-Tasks
 
-This project contains some tasks for demonstration. They are located in ``tasks`` folder. You may add
-your own task suites in that directory, if you like.
+This project contains some tasks, tests and variables for demonstration. They are located in ``examples`` folder. You may add
+your own task/test suites in that directory, if you like.
 
 # Task name with spaces in URL
 
