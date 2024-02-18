@@ -73,7 +73,65 @@ http://localhost:5003/robotframework/run/mytask
 http://localhost:5003/robotframework/run/mytask/async
 ```
 
+There is also the all-in-one endpoint `POST http://localhost:5003/robotframework/run` which trigger execution of a robot files, test, task or suite.
+
+It can be customized with options in JSON payload.
+All available options are documented in Swagger schema and examples.
+
+Response contains a header field `x-request-id` that can be used to retrieve logs and reports.
+
+By default, execution is asynchronous, but it can be changed with **sync** option.
+
 **There is no limitation on executed Robot processes! It is easy to push the webservice in DOS with too many requests at once**
+
+### Call robot test
+
+```
+curl -X 'POST' \
+  'http://localhost:5003/robotframework/run' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "paths": [
+    "examples"
+  ],
+  "test": "Demonstration Test"
+}'
+```
+
+### Call robot task
+
+```
+curl -X 'POST' \
+  'http://localhost:5003/robotframework/run' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "paths": [
+    "examples"
+  ],
+  "task": "Demonstration Task"
+}'
+```
+
+### Call robot task with variables
+
+```
+curl -X 'POST' \
+  'http://localhost:5003/robotframework/run' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "paths": [
+    "examples"
+  ],
+  "task": "Task with more variables",
+  "variables": {
+    "firstname": "Max",
+    "lastname": "Mustermann"
+  }
+}'
+```
 
 ## Reporting
 Endpoints that provide `log.html` and `report.html` for a specific task execution. You require the `x-request-id` from a previous response that triggered the execution.
