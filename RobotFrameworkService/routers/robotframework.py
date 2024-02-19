@@ -1,7 +1,7 @@
 from concurrent.futures import Executor
 import pathlib
 
-from fastapi import APIRouter, Request, Path
+from fastapi import APIRouter, Request, Path, status
 from fastapi.responses import HTMLResponse, Response, RedirectResponse
 from starlette.responses import JSONResponse
 
@@ -13,6 +13,7 @@ import robot
 import multiprocessing as mp
 
 import asyncio
+import shutil
 
 router = APIRouter(
     prefix="/robotframework",
@@ -21,6 +22,13 @@ router = APIRouter(
             "description": "Not found: Webservice is either busy or requested endpoint is not supported."
         }
     },
+)
+
+
+is_execution_finished = (
+    lambda x: x.is_dir()
+              and (x / "report.html").exists()
+              and (x / "log.html").exists()
 )
 
 
@@ -222,12 +230,38 @@ async def show_execution_ids():
     get all execution ids for the finished tasks
     """
     logs = pathlib.Path(f"./{LOGS}")
-    is_execution_finished = (
-        lambda x: x.is_dir()
-        and (x / "report.html").exists()
-        and (x / "log.html").exists()
-    )
     return [log.stem for log in logs.iterdir() if is_execution_finished(log)]
+
+
+@router.delete(
+    "/logs/{executionid}",
+    tags=["reporting"],
+    status_code=status.HTTP_204_NO_CONTENT,
+    responses={
+        status.HTTP_204_NO_CONTENT: {
+            "description": "The logs have been deleted",
+        },
+        status.HTTP_404_NOT_FOUND: {
+            "content": {"text/html": {}},
+            "description": "The logs not existing or being generating",
+        }
+    },
+)
+async def delete_logs(
+    executionid: str = Path(
+        description="Insert here the value of a previous response header field 'x-request-id' which you want delete logs",
+    )
+):
+    log = pathlib.Path(f"./{LOGS}/{executionid}")
+    if is_execution_finished(log):
+        shutil.rmtree(log, ignore_errors=True)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(
+            content=f"The logs {executionid} not existing or being generating",
+            media_type="text/html",
+            status_code=status.HTTP_404_NOT_FOUND
+        )
 
 
 def _start_all_robot_tasks(id: str, config) -> int:

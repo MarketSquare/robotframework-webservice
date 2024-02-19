@@ -79,6 +79,17 @@ class EndpointTesttest_s(unittest.TestCase):
             response = client.post("/robotframework/run", json={"paths": ["examples"], "test": "Demonstration Test", "sync": True})
             self.assertEqual(200, response.status_code)
 
+    def test_delete_robotlogs(self):
+        with TestClient(app) as client:
+            response = client.delete("/robotframework/logs/not_existing")
+            self.assertEqual(404, response.status_code)
+            self.assertEqual("The logs not_existing not existing or being generating", response.text)
+
+            run_response = client.get("/robotframework/run/anotherTask")
+            execution_id = run_response.headers["x-request-id"]
+            response = client.delete(f"/robotframework/logs/{execution_id}")
+            self.assertEqual(204, response.status_code)
+
     def __get_robot_webservice(self, endpoint, expected_response_code=200):
         with TestClient(app) as client:
             response = client.get(endpoint)
