@@ -7,11 +7,11 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Framework :: FastAPI
 Framework :: Robot Framework
-Programming Language :: Python :: 3.8
-Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
+Programming Language :: Python :: 3.13
+Programming Language :: Python :: 3.14
 """.strip().splitlines()
 
 
