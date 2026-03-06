@@ -15,6 +15,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
     strategy:
       fail-fast: false
       matrix:
@@ -23,12 +25,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v1
-        env:
-          UV_PYTHON: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
           uv sync --all-extras
-          uv pip install flake8 pytest httpx
+          uv pip install flake8
           mkdir logs
       - name: Lint with flake8
         run: |
@@ -36,6 +36,6 @@ jobs:
           uv run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           uv run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with pytest
+      - name: Test with pytestrun
         run: |
           uv run pytest
