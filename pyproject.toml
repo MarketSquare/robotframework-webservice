@@ -1,0 +1,22 @@
+[project]
+name = "robotframework-webservice"
+version = "1.0.0"
+description = "Webservice for running Robot Framework tests and tasks"
+authors = [{ name = "Markus Stahl", email = "markus.i.sverige@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiofiles>=25.1.0",
+    "fastapi>=0.135.1",
+    "requests>=2.32.5",
+    "robotframework>=6.0.0",
+    "uvicorn>=0.41.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "robotcode>=2.2.0",
+    "robotframework-robocop>=8.2.2",
+]
