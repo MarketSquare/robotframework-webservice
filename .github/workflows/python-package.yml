@@ -25,8 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v1
+        with:
+          enable-cache: true
       - name: Install dependencies
         run: |
+          uv python install ${{ matrix.python-version }}
           uv sync --all-extras
           uv pip install flake8
           mkdir logs
