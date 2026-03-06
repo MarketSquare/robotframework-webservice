@@ -762,6 +762,10 @@ dev = [
     { name = "robotcode" },
     { name = "robotframework-robocop" },
 ]
+test = [
+    { name = "httpx" },
+    { name = "pytest" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -778,6 +782,10 @@ dev = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "robotcode", specifier = ">=2.2.0" },
     { name = "robotframework-robocop", specifier = ">=8.2.2" },
+]
+test = [
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "pytest", specifier = ">=9.0.2" },
 ]
 
 [[package]]
