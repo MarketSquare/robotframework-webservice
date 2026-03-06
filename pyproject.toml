@@ -40,5 +40,8 @@ dev = [
 ]
 
 [tool.hatch.version]
-path = "RobotFrameworkService/version.py"
+path = "src/robotframework-webservice/version.py"
 pattern = 'VERSION = "(?P<version>[^"]+)"'
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/robotframework-webservice"]
