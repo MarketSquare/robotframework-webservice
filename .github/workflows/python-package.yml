@@ -24,14 +24,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v1
+      - uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
       - name: Install dependencies
         run: |
           uv python install ${{ matrix.python-version }}
-          uv sync
-          uv pip install pytest
+          uv sync --group test
           mkdir logs
       - name: Test with pytest
         run: |
