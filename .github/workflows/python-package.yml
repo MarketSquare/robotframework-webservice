@@ -31,6 +31,7 @@ jobs:
         run: |
           uv python install ${{ matrix.python-version }}
           uv sync
+          uv pip install pytest
           mkdir logs
       - name: Test with pytest
         run: |
