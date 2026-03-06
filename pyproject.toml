@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "robotframework-webservice"
+dynamic = ["version"]
+description = "Webservice for running Robot Framework tests and tasks"
+authors = [{ name = "Markus Stahl", email = "markus.i.sverige@gmail.com" }]
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache License 2.0" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+    "Framework :: Robot Framework",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+urls = { Homepage = "https://github.com/MarketSquare/robotframework-webservice" }
+dependencies = [
+    "aiofiles>=25.1.0",
+    "fastapi>=0.135.1",
+    "requests>=2.32.5",
+    "robotframework>=6.0.0",
+    "uvicorn>=0.41.0",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.0.2",
+    "robotcode>=2.2.0",
+    "robotframework-robocop>=8.2.2",
+]
+test = ["httpx>=0.28.1", "pytest>=9.0.2"]
+
+[tool.hatch.version]
+path = "src/RobotFrameworkService/version.py"
+pattern = 'VERSION = "(?P<version>[^"]+)"'
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/RobotFrameworkService"]
