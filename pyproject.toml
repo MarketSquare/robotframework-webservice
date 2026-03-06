@@ -38,6 +38,7 @@ dev = [
     "robotcode>=2.2.0",
     "robotframework-robocop>=8.2.2",
 ]
+test = ["httpx>=0.28.1", "pytest>=9.0.2"]
 
 [tool.hatch.version]
 path = "src/RobotFrameworkService/version.py"
