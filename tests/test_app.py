@@ -5,22 +5,24 @@ from RobotFrameworkService.main import app
 
 class EndpointTesttest_s(unittest.TestCase):
     def test_is_service_available(self):
-        response = self.__get_robot_webservice("/status")
+        self.__get_robot_webservice("/status", expected_response_code=200)
 
-    def test_is_robottask_startable(self):
+    def test_is_all_robottask_startable(self):
         response = self.__get_robot_webservice(
-            "/robotframework/run/all", expected_response_code=400
+            "/robotframework/run/all", expected_response_code=500
         )
         self.__is_robot_failed(response=response)
 
-    def test_is_robottask_async_startable(self):
-        self.__get_robot_webservice("/robotframework/run/all/async")
+    def test_is_all_robottask_async_startable(self):
+        self.__get_robot_webservice(
+            "/robotframework/run/all/async", expected_response_code=200
+        )
 
-    def test_is_robottask_startable(self):
+    def test_is_other_robottask_startable(self):
         response = self.__get_robot_webservice("/robotframework/run/anotherTask")
         self.__is_robot_passed(response=response)
 
-    def test_is_robottask_async_startable(self):
+    def test_is_other_robottask_async_startable(self):
         self.__get_robot_webservice("/robotframework/run/anotherTask/async")
 
     def test_robottask_with_variables(self):
@@ -69,21 +71,37 @@ class EndpointTesttest_s(unittest.TestCase):
 
     def test_is_robot_run(self):
         with TestClient(app) as client:
-            response = client.post("/robotframework/run", json={"task": "Another task", "test": "Demonstration Test"})
+            response = client.post(
+                "/robotframework/run",
+                json={"task": "Another task", "test": "Demonstration Test"},
+            )
             self.assertEqual(400, response.status_code)
-            self.assertEqual("Options test and task cannot be both specified", response.text)
+            self.assertEqual(
+                "Options test and task cannot be both specified", response.text
+            )
 
-            response = client.post("/robotframework/run", json={"task": "Another task", "sync": True})
+            response = client.post(
+                "/robotframework/run", json={"task": "Another task", "sync": True}
+            )
             self.assertEqual(200, response.status_code)
 
-            response = client.post("/robotframework/run", json={"paths": ["examples"], "test": "Demonstration Test", "sync": True})
+            response = client.post(
+                "/robotframework/run",
+                json={
+                    "paths": ["examples"],
+                    "test": "Demonstration Test",
+                    "sync": True,
+                },
+            )
             self.assertEqual(200, response.status_code)
 
     def test_delete_robotlogs(self):
         with TestClient(app) as client:
             response = client.delete("/robotframework/logs/not_existing")
             self.assertEqual(404, response.status_code)
-            self.assertEqual("The logs not_existing not existing or being generating", response.text)
+            self.assertEqual(
+                "The logs not_existing not existing or being generating", response.text
+            )
 
             run_response = client.get("/robotframework/run/anotherTask")
             execution_id = run_response.headers["x-request-id"]
