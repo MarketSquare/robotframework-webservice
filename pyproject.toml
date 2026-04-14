@@ -34,11 +34,11 @@ dependencies = [
 [dependency-groups]
 dev = [
     "httpx>=0.28.1",
-    "pytest>=9.0.2",
+    "pytest>=9.0.3",
     "robotcode>=2.2.0",
     "robotframework-robocop>=8.2.2",
 ]
-test = ["httpx>=0.28.1", "pytest>=9.0.2"]
+test = ["httpx>=0.28.1", "pytest>=9.0.3"]
 
 [tool.hatch.version]
 path = "src/RobotFrameworkService/version.py"
